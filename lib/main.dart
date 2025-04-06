@@ -23,7 +23,16 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    SpotifyService();
+    authenticateSpotify(); // <-- add this
+  }
+
+  Future<void> authenticateSpotify() async {
+    final connected = await spotifyAuth.connectToSpotify();
+    if (connected) {
+      print(' Connected to Spotify');
+    } else {
+      print(' Could not connect to Spotify');
+    }
   }
 
   @override

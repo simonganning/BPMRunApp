@@ -11,10 +11,22 @@ class SpotifyService {
 
   Future<bool> connectToSpotify() async {
     try {
-      return await SpotifySdk.connectToSpotifyRemote(
+      final token =
+          await getAccessToken(); // this will show login prompt if needed
+
+      if (token == null) {
+        print('❌ Failed to get token');
+        return false;
+      }
+
+      final connected = await SpotifySdk.connectToSpotifyRemote(
         clientId: clientId,
         redirectUrl: redirectUrl,
+        accessToken: token,
       );
+
+      print('✅ Spotify connected: $connected');
+      return connected;
     } catch (e) {
       print('Error connecting to Spotify: $e');
       return false;
