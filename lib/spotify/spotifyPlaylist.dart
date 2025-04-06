@@ -1,7 +1,11 @@
+/*
+
+
 import 'package:flutter/material.dart';
 import 'package:bpmapp/spotify/Spotify.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:bpmapp/homePage/playlist.dart';
 
 class Playlist extends StatefulWidget {
   const Playlist({super.key});
@@ -12,7 +16,7 @@ class Playlist extends StatefulWidget {
 
 class _PlaylistState extends State<Playlist> {
   final SpotifyService spotifyService = SpotifyService();
-  List<String> playlists = [];
+  List<PlaylistItem> playlists = [];
   bool isLoading = true;
 
   @override
@@ -31,7 +35,7 @@ class _PlaylistState extends State<Playlist> {
     } catch (error) {
       print('Error loading playlists: $error');
       setState(() {
-        playlists = ['Failed to fetch playlists'];
+        //   playlists = ['Failed to fetch playlists'];
         isLoading = false;
       });
     }
@@ -55,16 +59,19 @@ class _PlaylistState extends State<Playlist> {
             )
           : Column(
               children: playlists.map((playlist) {
-                return Text(
-                  playlist,
+                return Text('hej'
+                    /*
+                //  playlists,
                   style: const TextStyle(
                     fontSize: 18,
                     decoration: TextDecoration.none,
                     color: Colors.white,
                   ),
-                );
+                */
+                    );
               }).toList(),
             ),
     );
   }
 }
+*/

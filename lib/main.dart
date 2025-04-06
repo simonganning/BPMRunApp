@@ -1,8 +1,10 @@
 import 'dart:ui';
 
-import 'package:bpmapp/homePage/bpmCard.dart';
+import 'package:bpmapp/health/mainHealth.dart';
+import 'package:bpmapp/homePage/musicPlayer.dart';
 import 'package:bpmapp/homePage/playlist.dart';
 import 'package:bpmapp/homePage/settingsCard.dart';
+import 'package:bpmapp/homePage/tempoCard.dart';
 import 'package:bpmapp/spotify/spotify.dart';
 import 'package:flutter/material.dart';
 
@@ -51,32 +53,33 @@ class _MyAppState extends State<MyApp> {
               child: Column(
                 children: [
                   Expanded(
-                    child: Text(
-                      'BPM run app',
-                      style: TextStyle(
-                          fontSize: 30,
-                          decoration: TextDecoration.none,
-                          color: Colors.white),
-                    ),
+                    flex: 1,
+                    child: Container(),
                   ),
                   Expanded(
+                      flex: 1,
                       child: Text(
-                    'What music should we play?',
-                    style: TextStyle(
-                        fontSize: 24,
-                        decoration: TextDecoration.none,
-                        color: Colors.white),
-                  )),
+                        textAlign: TextAlign.center,
+                        'Choose which playlists you want to listen to',
+                        style: TextStyle(
+                            fontSize: 26,
+                            decoration: TextDecoration.none,
+                            color: Colors.white),
+                      )),
                   Expanded(
-                    flex: 3,
+                    flex: 5,
                     child: Playlist(),
                   ),
                   Expanded(
                     flex: 1,
-                    child: BpmCard(),
+                    child: HealthKitManager(), // make a new TEMP CARD
                   ),
                   Expanded(
                     flex: 2,
+                    child: MusicPlayer(),
+                  ),
+                  Expanded(
+                    flex: 1,
                     child: SettingsCard(),
                   ),
                 ],

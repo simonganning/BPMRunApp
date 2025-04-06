@@ -1,3 +1,4 @@
+import 'package:bpmapp/settingsPage/bpmCard.dart';
 import 'package:bpmapp/main.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -47,15 +48,7 @@ class MainSettingsPage extends StatelessWidget {
                         color: Colors.white),
                   ),
                 ),
-                Expanded(
-                  child: Text(
-                    'Settings  4 ',
-                    style: TextStyle(
-                        fontSize: 18,
-                        decoration: TextDecoration.none,
-                        color: Colors.white),
-                  ),
-                ),
+                Expanded(child: BpmCard()),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(

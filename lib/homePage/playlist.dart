@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:bpmapp/spotify/spotify.dart';
-import 'package:bpmapp/spotify/spotifyPlaylist.dart';
 
 class Playlist extends StatefulWidget {
   const Playlist({super.key});
@@ -9,11 +8,27 @@ class Playlist extends StatefulWidget {
   State<Playlist> createState() => _PlaylistState();
 }
 
+class PlaylistItem {
+  final String id;
+  final String name;
+  final String imageUrl;
+  bool isChosen;
+
+  PlaylistItem({
+    required this.id,
+    required this.name,
+    required this.imageUrl,
+    this.isChosen = false,
+  });
+}
+
 class _PlaylistState extends State<Playlist> {
   final ScrollController _scrollController = ScrollController();
   final SpotifyService spotifyService = SpotifyService();
 
-  List<String> playlists = [];
+  //List<String> playlists = [];
+  List<PlaylistItem> playlists = [];
+
   bool isLoading = false;
   int offset = 0;
   final int limit = 20;
@@ -30,7 +45,7 @@ class _PlaylistState extends State<Playlist> {
         loadMorePlaylists();
       }
     });
-    loadMorePlaylists(); // initial load
+    loadMorePlaylists();
   }
 
   Future<void> loadMorePlaylists() async {
@@ -41,6 +56,7 @@ class _PlaylistState extends State<Playlist> {
 
       setState(() {
         playlists.addAll(newPlaylists);
+
         offset += limit;
         if (newPlaylists.length < limit) {
           hasMore = false; // no more to load
@@ -48,7 +64,7 @@ class _PlaylistState extends State<Playlist> {
         isLoading = false;
       });
     } catch (e) {
-      print('❌ Error fetching playlists: $e');
+      print('Error fetching playlists: $e');
       setState(() => isLoading = false);
     }
   }
@@ -64,7 +80,7 @@ class _PlaylistState extends State<Playlist> {
         color: const Color.fromARGB(54, 181, 34, 117),
       ),
       child: playlists.isEmpty && isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.white))
+          ? const Center(child: CircularProgressIndicator(color: Colors.red))
           : ListView.builder(
               controller: _scrollController,
               shrinkWrap: true,
@@ -76,16 +92,51 @@ class _PlaylistState extends State<Playlist> {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
-                return Text(
-                  playlists[index],
-                  style: const TextStyle(
-                    fontSize: 18,
-                    decoration: TextDecoration.none,
-                    color: Colors.white,
+
+                final item = playlists[index];
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      item.isChosen = !item.isChosen;
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: item.isChosen
+                          ? Colors.pink.shade200
+                          : const Color.fromARGB(60, 151, 77, 77),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.white54),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.network(item.imageUrl, width: 50, height: 50),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: Text(
+                            item.name,
+                            style: const TextStyle(
+                              decoration: TextDecoration.none,
+                              fontSize: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          item.isChosen
+                              ? Icons.check_circle
+                              : Icons.circle_outlined,
+                          color: item.isChosen
+                              ? Colors.greenAccent
+                              : Colors.white54,
+                        )
+                      ],
+                    ),
                   ),
                 );
-              },
-            ),
+              }),
     );
   }
 

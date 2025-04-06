@@ -82,9 +82,9 @@ class _HealthKitManagerState extends State<HealthKitManager> {
 
   @override
   Widget build(BuildContext context) {
-    return Text('${stepsPerMinute ?? 'Loading...'}',
+    return Text('${stepsPerMinute ?? 'Tempo'}',
         style: TextStyle(
-            fontSize: 20,
+            fontSize: 40,
             decoration: TextDecoration.none,
             color: Colors.white));
   }

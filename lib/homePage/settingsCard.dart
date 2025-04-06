@@ -11,7 +11,7 @@ class SettingsCard extends StatelessWidget {
     return Container(
         width: double.infinity,
         margin: EdgeInsets.all(10),
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: const Color.fromARGB(54, 181, 34, 117),
@@ -38,34 +38,6 @@ class SettingsCard extends StatelessWidget {
                         );
                       },
                       icon: Icon(Icons.settings, color: Colors.white))
-                ],
-              ),
-            ),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'TURN ON/OFF BPM TRACKER',
-                    style: TextStyle(
-                        fontSize: 20,
-                        decoration: TextDecoration.none,
-                        color: Colors.white),
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        if (bpmState == false) {
-                          bpmState = true;
-                          print('bpmstate is true');
-                        } else {
-                          bpmState = false;
-                          print('bpmstate is false');
-                        }
-                      },
-                      icon: Icon(
-                        Icons.circle,
-                        color: Colors.white,
-                      ))
                 ],
               ),
             ),

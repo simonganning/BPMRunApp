@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bpmapp/homePage/playlist.dart';
 import 'package:http/http.dart' as http;
 import 'package:spotify_sdk/spotify_sdk.dart';
 
@@ -48,7 +49,8 @@ class SpotifyService {
     }
   }
 
-  Future<List<String>> fetchPlaylists({int offset = 0, int limit = 20}) async {
+  Future<List<PlaylistItem>> fetchPlaylists(
+      {int offset = 0, int limit = 20}) async {
     final token = await getAccessToken();
     if (token == null) throw Exception('No access token');
 
@@ -61,48 +63,18 @@ class SpotifyService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final items = data['items'] as List;
-      return items.map((item) => item['name'] as String).toList();
+      return items.map((item) {
+        return PlaylistItem(
+          id: item['id'],
+          name: item['name'],
+          imageUrl: item['images'] != null && item['images'].isNotEmpty
+              ? item['images'][0]['url']
+              : 'https://api.algobook.info/v1/randomimage?category=nature', // fallback image
+          isChosen: false,
+        );
+      }).toList();
     } else {
       throw Exception('Failed to fetch playlists: ${response.body}');
     }
   }
 }
-/*
-// Define your Client ID and Redirect URI
-  static const String _clientId = '[your spotify client id here]';
-  static const String _redirectUri =
-      'spotify-ios-quick-start://spotify-login-callback';
-
-  // Method to authorize the app
-  Future<void> authorizeSpotify() async {
-    try {
-      // Authenticate with Spotify
-      final accessToken = await SpotifySdk.getAccessToken(
-        clientId: _clientId,
-        redirectUrl: _redirectUri,
-        scope: 'user-read-private user-read-email',
-      );
-
-      if (accessToken != null) {
-        print('Spotify access token: $accessToken');
-        // Use the access token for further Spotify SDK interactions
-      }
-    } catch (error) {
-      print('Error during Spotify authorization: $error');
-    }
-  }
-
-  // Configure callback to handle redirect URI
-  void handleAuthCallback(String url) {
-    final Uri uri = Uri.parse(url);
-    final parameters = uri.queryParameters;
-
-    if (parameters.containsKey('access_token')) {
-      final accessToken = parameters['access_token'];
-      print('Spotify access token: $accessToken');
-    } else if (parameters.containsKey('error')) {
-      final errorDescription = parameters['error'];
-      print('Error during Spotify authorization: $errorDescription');
-    }
-  }
-  */
