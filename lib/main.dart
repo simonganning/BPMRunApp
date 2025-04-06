@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
                     child: Playlist(),
                   ),
                   Expanded(
-                    flex: 2,
+                    flex: 1,
                     child: BpmCard(),
                   ),
                   Expanded(

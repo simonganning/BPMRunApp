@@ -10,29 +10,46 @@ class Playlist extends StatefulWidget {
 }
 
 class _PlaylistState extends State<Playlist> {
+  final ScrollController _scrollController = ScrollController();
   final SpotifyService spotifyService = SpotifyService();
+
   List<String> playlists = [];
-  bool isLoading = true;
+  bool isLoading = false;
+  int offset = 0;
+  final int limit = 20;
+  bool hasMore = true;
 
   @override
   void initState() {
     super.initState();
-    loadPlaylists();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 100 &&
+          !isLoading &&
+          hasMore) {
+        loadMorePlaylists();
+      }
+    });
+    loadMorePlaylists(); // initial load
   }
 
-  Future<void> loadPlaylists() async {
+  Future<void> loadMorePlaylists() async {
+    setState(() => isLoading = true);
     try {
-      final fetchedPlaylists = await spotifyService.fetchPlaylists();
+      final newPlaylists =
+          await spotifyService.fetchPlaylists(offset: offset, limit: limit);
+
       setState(() {
-        playlists = fetchedPlaylists;
+        playlists.addAll(newPlaylists);
+        offset += limit;
+        if (newPlaylists.length < limit) {
+          hasMore = false; // no more to load
+        }
         isLoading = false;
       });
-    } catch (error) {
-      print('Error loading playlists: $error');
-      setState(() {
-        playlists = ['Failed to fetch playlists'];
-        isLoading = false;
-      });
+    } catch (e) {
+      print('❌ Error fetching playlists: $e');
+      setState(() => isLoading = false);
     }
   }
 
@@ -46,24 +63,35 @@ class _PlaylistState extends State<Playlist> {
         borderRadius: BorderRadius.circular(20),
         color: const Color.fromARGB(54, 181, 34, 117),
       ),
-      child: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-              ),
-            )
-          : Column(
-              children: playlists.map((playlist) {
+      child: playlists.isEmpty && isLoading
+          ? const Center(child: CircularProgressIndicator(color: Colors.white))
+          : ListView.builder(
+              controller: _scrollController,
+              shrinkWrap: true,
+              itemCount: playlists.length + (hasMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == playlists.length) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
                 return Text(
-                  playlist,
+                  playlists[index],
                   style: const TextStyle(
                     fontSize: 18,
                     decoration: TextDecoration.none,
                     color: Colors.white,
                   ),
                 );
-              }).toList(),
+              },
             ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

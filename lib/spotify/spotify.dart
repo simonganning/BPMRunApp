@@ -48,26 +48,22 @@ class SpotifyService {
     }
   }
 
-  Future<List<String>> fetchPlaylists() async {
-    final accessToken = await getAccessToken();
-    if (accessToken == null) {
-      throw Exception('Failed to retrieve access token');
-    }
-// lägg någon plyalist här
-    final url = Uri.parse('https://api.spotify.com/v1/me/playlists');
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-      },
-    );
+  Future<List<String>> fetchPlaylists({int offset = 0, int limit = 20}) async {
+    final token = await getAccessToken();
+    if (token == null) throw Exception('No access token');
+
+    final url = Uri.parse(
+        'https://api.spotify.com/v1/me/playlists?offset=$offset&limit=$limit');
+    final response = await http.get(url, headers: {
+      'Authorization': 'Bearer $token',
+    });
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final playlists = data['items'] as List;
-      return playlists.map((item) => item['name'] as String).toList();
+      final items = data['items'] as List;
+      return items.map((item) => item['name'] as String).toList();
     } else {
-      throw Exception('Failed to fetch playlists');
+      throw Exception('Failed to fetch playlists: ${response.body}');
     }
   }
 }
