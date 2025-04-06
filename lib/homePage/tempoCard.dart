@@ -50,17 +50,6 @@ class _TempoCardState extends State<TempoCard> {
           children: [
             Expanded(
               flex: 1,
-              child: Text(
-                'Your current BPM',
-                style: TextStyle(
-                  fontSize: 20,
-                  decoration: TextDecoration.none,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
               child: HealthKitManager(),
             ),
           ],

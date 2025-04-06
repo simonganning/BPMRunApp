@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:bpmapp/health/mainHealth.dart';
-import 'package:bpmapp/homePage/musicPlayer.dart';
+import 'package:bpmapp/homePage/musicPlayerCard.dart';
 import 'package:bpmapp/homePage/playlist.dart';
 import 'package:bpmapp/homePage/settingsCard.dart';
 import 'package:bpmapp/homePage/tempoCard.dart';
