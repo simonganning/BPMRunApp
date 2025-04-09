@@ -6,6 +6,7 @@ import 'package:bpmapp/homePage/playlist.dart';
 import 'package:bpmapp/homePage/settingsCard.dart';
 import 'package:bpmapp/homePage/tempoCard.dart';
 import 'package:bpmapp/spotify/spotify.dart';
+import 'package:bpmapp/spotify/musicPlayer.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -25,7 +26,11 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    authenticateSpotify(); // <-- add this
+    authenticateSpotify();
+    //  MusicPlayerSpotify player = MusicPlayerSpotify();
+    // print(' GOING IN TO DEVICES');
+    // player.FetchDevice();
+    // print(' PASSED DEVICES');
   }
 
   Future<void> authenticateSpotify() async {

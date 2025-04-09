@@ -16,7 +16,7 @@ class SpotifyService {
           await getAccessToken(); // this will show login prompt if needed
 
       if (token == null) {
-        print('❌ Failed to get token');
+        print(' Failed to get token');
         return false;
       }
 

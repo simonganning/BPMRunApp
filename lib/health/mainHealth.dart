@@ -54,13 +54,13 @@ class _HealthKitManagerState extends State<HealthKitManager> {
       if (oldSteps != null && newSteps != null) {
         // Calculate steps per minute
         int stepsDifference = newSteps! - oldSteps!;
-        stepsPerMinute = (stepsDifference * 2); // 30s interval -> multiply by 2
+        stepsPerMinute = (stepsDifference * 12); // 5 sec interval
         oldSteps = newSteps; // Update old steps for next calculation
 
-        print('New steps: $newSteps');
-        print('Old steps: $oldSteps');
-        print('Steps taken in last 30 seconds: $stepsDifference');
-        print('Steps per minute: $stepsPerMinute');
+        //  print('New steps: $newSteps');
+        //   print('Old steps: $oldSteps');
+        //    print('Steps taken in last 5 sec: $stepsDifference');
+        //   print('Steps per minute: $stepsPerMinute');
 
         stepsController.text = stepsPerMinute.toString();
       } else {
@@ -75,7 +75,7 @@ class _HealthKitManagerState extends State<HealthKitManager> {
 
 // update bpm after every 30 sec
   void startTimer() {
-    timer = Timer.periodic(Duration(seconds: 30), (timer) async {
+    timer = Timer.periodic(Duration(seconds: 5), (timer) async {
       await calculateStepsPerMinute();
     });
   }
