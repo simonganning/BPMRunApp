@@ -1,10 +1,12 @@
+/*
+
 import 'package:bpmapp/spotify/spotify.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class MusicPlayerSpotify {
   SpotifyService spotify = SpotifyService();
-  String Device_ID = "";
+  String device_ID = "";
 
   Future<void> FetchDevice() async {
     final token = await spotify.getAccessToken();
@@ -18,7 +20,7 @@ class MusicPlayerSpotify {
     );
 
     final data = json.decode(response.body);
-    print('API response: $data'); // Debugging print
+    print('API response: $data');
 
     final devicesRaw = data['devices'];
     if (devicesRaw == null) {
@@ -33,26 +35,10 @@ class MusicPlayerSpotify {
     }
 
     if (devices.isNotEmpty) {
-      Device_ID = devices[0]['id'];
-      print('Device ID set to: $Device_ID');
+      device_ID = devices[0]['id'];
+      print('Device ID set to: $device_ID');
     }
   }
-/*
-  PlayTrack(String track_id) async {
-    var offsetVal = OffsetTrack(position: 0);
-    var selectedMusic = Playtrack(
-        uris: ["spotify:track:$track_id"], offset: offsetVal, positionMs: 0);
-
-    var playIt = await http.put(
-        Uri.parse(
-            'https://api.spotify.com/v1/me/player/play?device_id=$Device_ID'),
-        headers: {
-          "Content-Type": 'application/json',
-          "authorization": 'Bearer $Access_Token',
-        },
-        body: json.encode(selectedMusic));
-  }
-  */
 }
 
 class AvailableDevices {
@@ -60,22 +46,5 @@ class AvailableDevices {
   AvailableDevices({
     required this.id,
   });
-}
-
-/*
-Response sample
-{
-  "devices": [
-    {
-      "id": "string",
-      "is_active": false,
-      "is_private_session": false,
-      "is_restricted": false,
-      "name": "Kitchen speaker",
-      "type": "computer",
-      "volume_percent": 59,
-      "supports_volume": false
-    }
-  ]
 }
 */

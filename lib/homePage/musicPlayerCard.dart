@@ -1,5 +1,5 @@
-import 'package:bpmapp/settingsPage/mainSettingsPage.dart';
 import 'package:flutter/material.dart';
+import 'package:bpmapp/spotify/spotify.dart';
 
 bool bpmState = false;
 
@@ -26,7 +26,9 @@ class MusicPlayer extends StatelessWidget {
                     children: [
                       IconButton(
                           iconSize: 50,
-                          onPressed: () {/*  play back song */},
+                          onPressed: () {
+                            SpotifyService().prev();
+                          },
                           icon:
                               Icon(Icons.navigate_before, color: Colors.white)),
                       Text(
@@ -41,7 +43,9 @@ class MusicPlayer extends StatelessWidget {
                     children: [
                       IconButton(
                           iconSize: 50,
-                          onPressed: () {/*  play back song */},
+                          onPressed: () {
+                            SpotifyService().play_pause();
+                          },
                           icon: Icon(Icons.not_started, color: Colors.white)),
                       Text(
                           style: TextStyle(
@@ -55,7 +59,9 @@ class MusicPlayer extends StatelessWidget {
                     children: [
                       IconButton(
                           iconSize: 50,
-                          onPressed: () {/*  play back song */},
+                          onPressed: () {
+                            SpotifyService().next();
+                          },
                           icon: Icon(Icons.navigate_next, color: Colors.white)),
                       Text(
                           style: TextStyle(

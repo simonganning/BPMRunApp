@@ -12,12 +12,14 @@ class PlaylistItem {
   final String id;
   final String name;
   final String imageUrl;
+  //final Future<List<dynamic>> songs;
   bool isChosen;
 
   PlaylistItem({
     required this.id,
     required this.name,
     required this.imageUrl,
+    // required this.songs,
     this.isChosen = false,
   });
 }
@@ -26,8 +28,8 @@ class _PlaylistState extends State<Playlist> {
   final ScrollController _scrollController = ScrollController();
   final SpotifyService spotifyService = SpotifyService();
 
-  //List<String> playlists = [];
   List<PlaylistItem> playlists = [];
+  List<PlaylistItem> corePlaylist = [];
 
   bool isLoading = false;
   int offset = 0;
@@ -98,6 +100,14 @@ class _PlaylistState extends State<Playlist> {
                   onTap: () {
                     setState(() {
                       item.isChosen = !item.isChosen;
+                      if (item.isChosen) {
+                        // funktion som tar in ett playlist item
+                        print(" playlist id that is choosen ${item.id}");
+                        spotifyService.addSongsToMainPlaylist(item.id);
+                        //  corePlaylist.add(item);
+                      } else if (!item.isChosen) {
+                        //corePlaylist.remove(item);
+                      }
                     });
                   },
                   child: Container(
