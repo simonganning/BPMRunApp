@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:bpmapp/homePage/playlist.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 class SpotifyService {
@@ -16,13 +14,28 @@ class SpotifyService {
   String username = "";
   String? _accessToken;
   bool? playing;
-  String? main_playlistId;
+  String? mainPlaylistId;
 
   Future<void> connectToSpotify() async {
     try {
       _accessToken = await getAccessToken();
     } catch (e) {
       print('Error connecting to Spotify: $e');
+    }
+  }
+
+  Future<void> deletePlaylist(String? playlistID) async {
+    final url =
+        Uri.parse('https://api.spotify.com/v1/playlists/$playlistID/followers');
+
+    final response = await http.delete(url, headers: {
+      'Authorization': 'Bearer $_accessToken',
+    });
+
+    if (response.statusCode == 200) {
+      print("playlist deleted succefully");
+    } else {
+      print("some zing is wrong");
     }
   }
 
@@ -94,7 +107,7 @@ class SpotifyService {
   void addSongsToPlaylist(List<dynamic> songs, String playlistId) async {
     for (var song in songs) {
       final url = Uri.parse(
-          'https://api.spotify.com/v1/playlists/$main_playlistId/tracks?uris=spotify:track:$song');
+          'https://api.spotify.com/v1/playlists/$mainPlaylistId/tracks?uris=spotify:track:$song');
 
       final header = {
         'Authorization': 'Bearer $_accessToken',
@@ -108,6 +121,36 @@ class SpotifyService {
         print("no sucess");
       }
     } // end for loop
+  }
+
+  Future<Map<String, dynamic>> findPlaylist(String userId) async {
+    String name = "";
+    dynamic id = "";
+    Map<String, dynamic> nameIdMap = {};
+    Uri? url = Uri.parse(
+        'https://api.spotify.com/v1/users/$userId/playlists?limit=100');
+
+    while (url != null) {
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $_accessToken',
+      });
+      Map<String, dynamic> data = jsonDecode(response.body);
+      List<dynamic> items = data['items']; // make a lits with all the items
+      for (var item in items) {
+        name = item['name'];
+        id = item['id'];
+        print(' name is $name and id is $id');
+        nameIdMap[name] = id;
+      }
+
+      String? nextUrlString = data['next'];
+      if (nextUrlString != null) {
+        url = Uri.parse(nextUrlString);
+      } else {
+        url = null;
+      }
+    }
+    return nameIdMap;
   }
 
   Future<List<PlaylistItem>> fetchPlaylists(
@@ -149,18 +192,28 @@ class SpotifyService {
 
     final body = jsonEncode({"name": "My BPM running list", "public": "false"});
     // post the new playlist
+    Map oldPlaylist = await findPlaylist(username);
 
-    // if there is a playlist with that name, do not make it
+    oldPlaylist.forEach((key, value) {
+      if (key == 'My BPM running list') {
+        mainPlaylistId = value;
+        print(
+            "we found a playlist with that name, id main playlist is: $mainPlaylistId");
+        // if we find the playlist we delete it so it is empty when we start the progeam
+        deletePlaylist(mainPlaylistId);
+      }
+    });
+    // we make a new clean playlist with that name
     final response = await http.post(url, headers: headers, body: body);
 
     print('statuscode is ${response.statusCode}');
 
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body);
-      main_playlistId = data['id'];
-      print(" made a playlist with id: $main_playlistId");
+      mainPlaylistId = data['id'];
+      print(" made a playlist with id: $mainPlaylistId");
     } else {
-      print(" did not make a playlist with id: $main_playlistId");
+      print(" did not make a playlist with id: $mainPlaylistId");
       print("Error making a playlist");
     }
   }

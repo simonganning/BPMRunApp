@@ -43,7 +43,7 @@ class _HealthKitManagerState extends State<HealthKitManager> {
       var testTime = now.subtract(Duration(minutes: 1));
       stepsPerMinute =
           await health.getTotalStepsInInterval(testTime, now) ?? 160;
-      print("steps is steps: $stepsPerMinute");
+      //  print("steps is steps: $stepsPerMinute");
     } catch (e) {
       print('Error retrieving steps: $e');
     }
