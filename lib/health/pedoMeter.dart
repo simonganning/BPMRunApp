@@ -1,97 +1,119 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:pedometer/pedometer.dart';
+import 'package:cm_pedometer/cm_pedometer.dart';
+//import 'package:permission_handler/permission_handler.dart'; // Add this for permissions
 
-class PedoMeter extends StatefulWidget {
+class Pedo extends StatefulWidget {
   @override
   _PedoMeterState createState() => _PedoMeterState();
 }
 
-class _PedoMeterState extends State<PedoMeter> {
-  int currentSteps = 0;
-  int previousSteps = 0;
-  DateTime? previousTimestamp;
-
-  int stepsPerMinute = 0;
-
-  Timer? timer;
-  Stream<StepCount>? _stepCountStream;
-  Stream<PedestrianStatus>? _pedestrianStatusStream;
+class _PedoMeterState extends State<Pedo> {
+  int _currentTotalSteps = 0;
+  int _previousStepsSnapshot = 0;
+  DateTime? _lastSnapshotTime;
+  int _stepsPerMinute = 0;
+  StreamSubscription<CMPedometerData>? _pedometerSubscription;
+  Timer? _calculationTimer; // Timer to trigger SPM calculation
 
   @override
   void initState() {
-    print("initiate pedometer");
     super.initState();
-    initPlatformState();
-    startTimer(); // Start calculation timer
+    _initPedometer();
   }
 
-  void onStepCount(StepCount event) {
-    setState(() {
-      currentSteps = event.steps;
-      // Update previousTimestamp only if it's null (i.e. first reading)
-      previousTimestamp ??= event.timeStamp;
-    });
+  Future<void> _initPedometer() async {
+    print("Initializing pedometer...");
+    // 1. Request Activity Recognition permission
+
+    print("Activity Recognition permission granted.");
+    // 2. Check if step counting is available (optional but good practice)
+    bool isStepCountingAvailable = await CMPedometer.isStepCountingAvailable();
+    if (isStepCountingAvailable) {
+      print("Step counting is available.");
+      // 3. Start listening to real-time step updates
+      _pedometerSubscription = CMPedometer.stepCounterFirstStream().listen(
+        (CMPedometerData data) {
+          setState(() {
+            _currentTotalSteps = data.numberOfSteps;
+            // Initialize snapshot on first data
+            if (_lastSnapshotTime == null) {
+              _lastSnapshotTime = DateTime.now();
+              _previousStepsSnapshot = _currentTotalSteps;
+            }
+          });
+        },
+        onError: (error) {
+          print('Error listening to step count stream: $error');
+        },
+        onDone: () {
+          print('Step count stream finished.');
+        },
+      );
+
+      // 4. Start a periodic timer to calculate steps per minute
+      _calculationTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+        // Adjust interval as needed, 10-15 seconds is usually good
+        _calculateStepsPerMinute();
+      });
+    } else {
+      print("Step counting is NOT available on this device.");
+      // Handle cases where sensor is not available
+    }
   }
 
-  void onPedestrianStatusChanged(PedestrianStatus event) {
-    print('Pedestrian status: ${event.status} at ${event.timeStamp}');
-  }
-
-  void onStepCountError(error) => print('Step Count Error: $error');
-
-  void onPedestrianStatusError(error) =>
-      print('Pedestrian Status Error: $error');
-
-  Future<void> initPlatformState() async {
-    _stepCountStream = await Pedometer.stepCountStream;
-    _pedestrianStatusStream = await Pedometer.pedestrianStatusStream;
-
-    _stepCountStream?.listen(onStepCount).onError(onStepCountError);
-    _pedestrianStatusStream
-        ?.listen(onPedestrianStatusChanged)
-        .onError(onPedestrianStatusError);
-  }
-
-  void startTimer() {
-    timer = Timer.periodic(Duration(seconds: 5), (timer) async {
-      await calculateStepsPerMinute();
-    });
-  }
-
-  Future<void> calculateStepsPerMinute() async {
-    if (previousTimestamp == null) return;
+  void _calculateStepsPerMinute() {
+    if (_lastSnapshotTime == null ||
+        _currentTotalSteps == _previousStepsSnapshot) {
+      // No initial data or no change in steps since last snapshot
+      setState(() {
+        _stepsPerMinute = 0;
+      });
+      return;
+    }
 
     final now = DateTime.now();
-    final timeDiff = now.difference(previousTimestamp!).inSeconds;
+    final timeDifferenceInSeconds =
+        now.difference(_lastSnapshotTime!).inSeconds;
 
-    final stepDiff = currentSteps - previousSteps;
+    if (timeDifferenceInSeconds > 0) {
+      final stepsMoved = _currentTotalSteps - _previousStepsSnapshot;
+      final spm = (stepsMoved / timeDifferenceInSeconds) * 60;
 
-    if (timeDiff > 0) {
-      final spm = (stepDiff / timeDiff) * 60;
       setState(() {
-        stepsPerMinute = spm.round();
-        previousSteps = currentSteps;
-        previousTimestamp = now;
+        _stepsPerMinute = spm.round();
+        _previousStepsSnapshot = _currentTotalSteps;
+        _lastSnapshotTime = now;
       });
-      print("Steps per minute: $stepsPerMinute");
+      print("Steps per minute: $_stepsPerMinute");
+    } else {
+      setState(() {
+        _stepsPerMinute = 0; // Avoid division by zero
+      });
     }
   }
 
   @override
   void dispose() {
-    timer?.cancel();
+    _pedometerSubscription?.cancel();
+    _calculationTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Text('$currentSteps steps',
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(height: 20),
+        Text(
+          'Steps per Minute: $_stepsPerMinute',
           style: TextStyle(
-              fontSize: 40,
+              fontSize: 30,
               decoration: TextDecoration.none,
-              color: Colors.white)),
-    ]);
+              color: Colors.white),
+        ),
+      ],
+    );
   }
 }

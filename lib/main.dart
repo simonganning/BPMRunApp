@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
                     flex: 5,
                     child: Playlist(),
                   ),
-                  Expanded(flex: 1, child: PedoMeter() /* HealthKitManager()*/),
+                  Expanded(flex: 1, child: Pedo() /* HealthKitManager()*/),
                   Expanded(
                     flex: 2,
                     child: MusicPlayer(),

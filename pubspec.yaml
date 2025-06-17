@@ -36,6 +36,8 @@ dependencies:
   #health_kit_reporter: ^2.3.1
   statistics: ^1.1.0
   pedometer: ^4.1.1
+  pedometer_2: ^5.0.4
+  cm_pedometer: ^1.2.0
 
 
 

@@ -143,8 +143,8 @@ class SpotifyService {
         'Authorization': 'Bearer $_accessToken',
       };
 
-      await getTrackTempo(song);
-
+      //await getTrackTempo(song);
+      /*
       if (songTempo >= (userTempo - 10) && songTempo <= (userTempo + 10)) {
         final response = await http.post(url, headers: header);
 
@@ -153,7 +153,7 @@ class SpotifyService {
         }
       } else {
         print("we did not ad song with id $song with tempo $songTempo");
-      }
+      }*/
     } // end for loop
   }
 
