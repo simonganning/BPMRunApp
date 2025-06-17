@@ -10,11 +10,14 @@ class SpotifyService {
 
   final String clientId = 'ae9c8816792d4601b642965f0a4d13b4';
   final String redirectUrl = 'spotify-ios-quick-start://spotify-login-callback';
-  final String scope = 'playlist-modify-public';
+  final String scope =
+      'playlist-modify-public playlist-modify-private user-read-private';
   String username = "";
   String? _accessToken;
   bool? playing;
   String? mainPlaylistId;
+  double songTempo = 0;
+  int userTempo = 160;
 
   Future<void> connectToSpotify() async {
     try {
@@ -95,13 +98,40 @@ class SpotifyService {
       for (var items in items) {
         var track = items['track'];
         var songId = track['id'];
-        print(songId);
+        // print(songId);
         songs.add(songId);
       }
 
       addSongsToPlaylist(songs, playlistID);
     }
     return songs;
+  }
+
+  Future<void> getTrackTempo(String trackId) async {
+    await getAccessToken();
+    print('track Id is $trackId');
+    final url = Uri.parse('https://api.spotify.com/v1/audio-analysis/$trackId');
+
+    final header = {
+      'Authorization': 'Bearer $_accessToken',
+    };
+    final response = await http.get(url, headers: header);
+    print('status code is : ${response.statusCode}');
+    print('aut is : ${_accessToken}');
+    print(jsonDecode(response.body));
+
+    if (response.statusCode == 200) {
+      print("response OK from fetching tempo");
+      // Decode the JSON response
+      Map<String, dynamic> data = jsonDecode(response.body);
+
+      if (data.containsKey('tempo')) {
+        songTempo = data['tempo'];
+        print(" track with id: $trackId have tempo $songTempo");
+      }
+    } else {
+      print("respone not OK from fetching tempo");
+    }
   }
 
   void addSongsToPlaylist(List<dynamic> songs, String playlistId) async {
@@ -113,12 +143,16 @@ class SpotifyService {
         'Authorization': 'Bearer $_accessToken',
       };
 
-      final response = await http.post(url, headers: header);
+      await getTrackTempo(song);
 
-      if (response.statusCode == 201) {
-        print("sucess");
+      if (songTempo >= (userTempo - 10) && songTempo <= (userTempo + 10)) {
+        final response = await http.post(url, headers: header);
+
+        if (response.statusCode == 201) {
+          print("we added song id $song with tempo $songTempo");
+        }
       } else {
-        print("no sucess");
+        print("we did not ad song with id $song with tempo $songTempo");
       }
     } // end for loop
   }
@@ -139,7 +173,7 @@ class SpotifyService {
       for (var item in items) {
         name = item['name'];
         id = item['id'];
-        print(' name is $name and id is $id');
+        //  print(' name is $name and id is $id');
         nameIdMap[name] = id;
       }
 
