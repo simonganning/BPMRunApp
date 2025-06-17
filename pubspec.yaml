@@ -30,9 +30,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  health: ^10.0.0
+  health: ^13.1.0
   win32: ^5.5.4
   spotify_sdk: ^3.0.2 
+  #health_kit_reporter: ^2.3.1
+  statistics: ^1.1.0
+  pedometer: ^4.1.1
+
 
 
   # The following adds the Cupertino Icons font to your application.

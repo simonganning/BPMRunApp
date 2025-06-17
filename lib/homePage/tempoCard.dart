@@ -50,7 +50,8 @@ class _TempoCardState extends State<TempoCard> {
           children: [
             Expanded(
               flex: 1,
-              child: HealthKitManager(),
+              // child: HealthKitManager(),
+              child: Text('hej'),
             ),
           ],
         ),

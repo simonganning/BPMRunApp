@@ -1,12 +1,11 @@
 import 'dart:ui';
 
 import 'package:bpmapp/health/mainHealth.dart';
+import 'package:bpmapp/health/pedoMeter.dart';
 import 'package:bpmapp/homePage/musicPlayerCard.dart';
 import 'package:bpmapp/homePage/playlist.dart';
 import 'package:bpmapp/homePage/settingsCard.dart';
-import 'package:bpmapp/homePage/tempoCard.dart';
 import 'package:bpmapp/spotify/spotify.dart';
-import 'package:bpmapp/spotify/musicPlayer.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -68,10 +67,7 @@ class _MyAppState extends State<MyApp> {
                     flex: 5,
                     child: Playlist(),
                   ),
-                  Expanded(
-                    flex: 1,
-                    child: HealthKitManager(), // make a new TEMP CARD
-                  ),
+                  Expanded(flex: 1, child: PedoMeter() /* HealthKitManager()*/),
                   Expanded(
                     flex: 2,
                     child: MusicPlayer(),

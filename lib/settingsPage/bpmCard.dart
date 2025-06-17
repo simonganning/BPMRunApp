@@ -63,7 +63,8 @@ class _BpmCardState extends State<BpmCard> {
             ),
             Expanded(
               flex: 1,
-              child: HealthKitManager(),
+              // child: HealthKitManager(),
+              child: Text('hej'),
             ),
             Expanded(
               child: TextField(
