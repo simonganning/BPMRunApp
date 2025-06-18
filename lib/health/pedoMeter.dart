@@ -107,7 +107,7 @@ class _PedoMeterState extends State<Pedo> {
       children: [
         SizedBox(height: 20),
         Text(
-          'Steps per Minute: $_stepsPerMinute',
+          'Tempo: $_stepsPerMinute',
           style: TextStyle(
               fontSize: 30,
               decoration: TextDecoration.none,

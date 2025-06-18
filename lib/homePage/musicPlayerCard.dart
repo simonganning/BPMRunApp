@@ -27,7 +27,7 @@ class MusicPlayer extends StatelessWidget {
                       IconButton(
                           iconSize: 50,
                           onPressed: () {
-                            SpotifyService().prev();
+                            SpotifyService().next();
                           },
                           icon:
                               Icon(Icons.navigate_before, color: Colors.white)),
@@ -36,7 +36,7 @@ class MusicPlayer extends StatelessWidget {
                               fontSize: 15,
                               decoration: TextDecoration.none,
                               color: Colors.white),
-                          'Back'),
+                          'Next'),
                     ],
                   ),
                   Column(

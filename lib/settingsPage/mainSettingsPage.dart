@@ -23,7 +23,7 @@ class MainSettingsPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Settings 1 ',
+                    '',
                     style: TextStyle(
                         fontSize: 18,
                         decoration: TextDecoration.none,
@@ -32,7 +32,7 @@ class MainSettingsPage extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    'Settings 2 ',
+                    'You need a Spotify premium account for the app to work',
                     style: TextStyle(
                         fontSize: 18,
                         decoration: TextDecoration.none,
@@ -41,7 +41,25 @@ class MainSettingsPage extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    'Settings 3 ',
+                    'There is currently no filter on tempo or anything else since Spotify is not providing that feature at the moment. All songs are added to the modified playlist',
+                    style: TextStyle(
+                        fontSize: 18,
+                        decoration: TextDecoration.none,
+                        color: Colors.white),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Your tempo (steps per minute) is shown and is calculated every 10 seconds based on ios pedometer data',
+                    style: TextStyle(
+                        fontSize: 18,
+                        decoration: TextDecoration.none,
+                        color: Colors.white),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Select and deselect which playlists you want to listen to. All of the songs will be added to a temporary playlist called My BPM running list. The playlist is created anew every start of the application with zero songs',
                     style: TextStyle(
                         fontSize: 18,
                         decoration: TextDecoration.none,

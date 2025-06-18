@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:bpmapp/health/mainHealth.dart';
 import 'package:bpmapp/health/pedoMeter.dart';
 import 'package:bpmapp/homePage/musicPlayerCard.dart';
 import 'package:bpmapp/homePage/playlist.dart';

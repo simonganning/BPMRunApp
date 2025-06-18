@@ -78,6 +78,32 @@ class SpotifyService {
   // takes in a playlist iD
   // should already have created a playlist and now put all the songs from that playlist in
   // the new playlist
+
+  Future<void> getTrackTempo(String trackId) async {
+    await getAccessToken();
+    print('track Id is $trackId');
+
+    final url = Uri.parse('https://api.spotify.com/v1/audio-features/$trackId');
+    final headers = {
+      'Authorization': 'Bearer $_accessToken',
+    };
+
+    final response = await http.get(url, headers: headers);
+    print('status code is : ${response.statusCode}');
+    print('auth is : $_accessToken');
+    print(jsonDecode(response.body));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data.containsKey('tempo')) {
+        songTempo = data['tempo'];
+        print("Track with id: $trackId has tempo $songTempo");
+      }
+    } else {
+      print("Response not OK when fetching tempo");
+    }
+  }
+
   Future<List<dynamic>> addSongsToMainPlaylist(String playlistID) async {
     List<dynamic> songs = [];
     final token = await getAccessToken();
@@ -102,39 +128,41 @@ class SpotifyService {
         songs.add(songId);
       }
 
-      addSongsToPlaylist(songs, playlistID);
+      addSongsToPlaylist(songs);
     }
     return songs;
   }
 
-  Future<void> getTrackTempo(String trackId) async {
-    await getAccessToken();
-    print('track Id is $trackId');
-    final url = Uri.parse('https://api.spotify.com/v1/audio-analysis/$trackId');
+  Future<List<dynamic>> deleteSongsFromMainPlaylist(String playlistID) async {
+    List<dynamic> songs = [];
+    final token = await getAccessToken();
 
-    final header = {
-      'Authorization': 'Bearer $_accessToken',
-    };
-    final response = await http.get(url, headers: header);
-    print('status code is : ${response.statusCode}');
-    print('aut is : ${_accessToken}');
-    print(jsonDecode(response.body));
-
+    final url =
+        Uri.parse('https://api.spotify.com/v1/playlists/$playlistID/tracks');
+    final response = await http.get(url, headers: {
+      'Authorization': 'Bearer $token',
+    });
     if (response.statusCode == 200) {
-      print("response OK from fetching tempo");
-      // Decode the JSON response
+      print('response is ok');
+      // final data = json.decode(response.body);
+      // final items = data['items'] as Map;
       Map<String, dynamic> data = jsonDecode(response.body);
 
-      if (data.containsKey('tempo')) {
-        songTempo = data['tempo'];
-        print(" track with id: $trackId have tempo $songTempo");
+      List<dynamic> items = data['items']; // make a lits with all the items
+
+      for (var items in items) {
+        var track = items['track'];
+        var songId = track['id'];
+        print(songId);
+        songs.add(songId);
       }
-    } else {
-      print("respone not OK from fetching tempo");
+
+      deleteSongsFromPlaylist(songs);
     }
+    return songs;
   }
 
-  void addSongsToPlaylist(List<dynamic> songs, String playlistId) async {
+  void addSongsToPlaylist(List<dynamic> songs) async {
     for (var song in songs) {
       final url = Uri.parse(
           'https://api.spotify.com/v1/playlists/$mainPlaylistId/tracks?uris=spotify:track:$song');
@@ -142,19 +170,43 @@ class SpotifyService {
       final header = {
         'Authorization': 'Bearer $_accessToken',
       };
+      final response = await http.post(url, headers: header);
+      if (response.statusCode == 201) {
+        print("we added song id $song to playlist");
+      }
 
-      //await getTrackTempo(song);
-      /*
-      if (songTempo >= (userTempo - 10) && songTempo <= (userTempo + 10)) {
-        final response = await http.post(url, headers: header);
+      await getTrackTempo(song);
+    }
+  }
 
-        if (response.statusCode == 201) {
-          print("we added song id $song with tempo $songTempo");
-        }
-      } else {
-        print("we did not ad song with id $song with tempo $songTempo");
-      }*/
-    } // end for loop
+  Future<void> deleteSongsFromPlaylist(List<dynamic> songs) async {
+    print("We are now in deleteSongsFromPlaylist");
+
+    final url = Uri.parse(
+        'https://api.spotify.com/v1/playlists/$mainPlaylistId/tracks');
+
+    final List<Map<String, String>> trackUris = songs.map((songId) {
+      return {
+        "uri": "spotify:track:$songId",
+      };
+    }).toList();
+
+    final headers = {
+      'Authorization': 'Bearer $_accessToken',
+    };
+
+    final body = jsonEncode({
+      "tracks": trackUris,
+    });
+
+    final response = await http.delete(url, headers: headers, body: body);
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      print("Successfully deleted songs from playlist $mainPlaylistId");
+    } else {
+      print(
+          "Failed to delete songs: ${response.statusCode} - ${response.body}");
+    }
   }
 
   Future<Map<String, dynamic>> findPlaylist(String userId) async {
@@ -270,6 +322,8 @@ class SpotifyService {
   // for next song button
   Future<void> next() async {
     try {
+      final String spotifyUri = 'spotify:playlist:$mainPlaylistId';
+      await SpotifySdk.play(spotifyUri: spotifyUri);
       await SpotifySdk.skipNext();
     } catch (e) {
       print('Couln not pause the song');

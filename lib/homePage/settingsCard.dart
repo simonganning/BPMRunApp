@@ -23,7 +23,7 @@ class SettingsCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Settings',
+                    'Information about the app',
                     style: TextStyle(
                         fontSize: 20,
                         decoration: TextDecoration.none,

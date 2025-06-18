@@ -106,7 +106,8 @@ class _PlaylistState extends State<Playlist> {
                         spotifyService.addSongsToMainPlaylist(item.id);
                         //  corePlaylist.add(item);
                       } else if (!item.isChosen) {
-                        //corePlaylist.remove(item);
+                        print('playlist id that is un -choosen ${item.id}');
+                        spotifyService.deleteSongsFromMainPlaylist(item.id);
                       }
                     });
                   },
