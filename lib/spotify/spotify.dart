@@ -80,14 +80,13 @@ class SpotifyService {
   // the new playlist
 
   Future<void> getTrackTempo(String trackID) async {
-    final url = Uri.parse('http://192.168.0.174:5000/get-bpm');
+    final url = Uri.parse('http://192.168.0.174:5001/');
 
-    final response = await http.post(
+    final response = await http.get(
       url,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: jsonEncode({'track': trackID}),
     );
 
     if (response.statusCode == 200) {
