@@ -1,4 +1,3 @@
-import 'package:bpmapp/health/mainHealth.dart';
 import 'package:flutter/material.dart';
 
 class TempoCard extends StatefulWidget {

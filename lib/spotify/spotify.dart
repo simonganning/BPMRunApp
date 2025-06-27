@@ -79,28 +79,22 @@ class SpotifyService {
   // should already have created a playlist and now put all the songs from that playlist in
   // the new playlist
 
-  Future<void> getTrackTempo(String trackId) async {
-    await getAccessToken();
-    print('track Id is $trackId');
+  Future<void> getTrackTempo(String trackID) async {
+    final url = Uri.parse('http://192.168.0.174:5000/get-bpm');
 
-    final url = Uri.parse('https://api.spotify.com/v1/audio-features/$trackId');
-    final headers = {
-      'Authorization': 'Bearer $_accessToken',
-    };
-
-    final response = await http.get(url, headers: headers);
-    print('status code is : ${response.statusCode}');
-    print('auth is : $_accessToken');
-    print(jsonDecode(response.body));
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'track': trackID}),
+    );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      if (data.containsKey('tempo')) {
-        songTempo = data['tempo'];
-        print("Track with id: $trackId has tempo $songTempo");
-      }
+      print('BPM: ${data['bpm']}, Energy: ${data['energy']}');
     } else {
-      print("Response not OK when fetching tempo");
+      print('Error: ${response.body}');
     }
   }
 
@@ -171,6 +165,7 @@ class SpotifyService {
         'Authorization': 'Bearer $_accessToken',
       };
       final response = await http.post(url, headers: header);
+
       if (response.statusCode == 201) {
         print("we added song id $song to playlist");
       }
