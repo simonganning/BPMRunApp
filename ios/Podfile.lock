@@ -1,34 +1,52 @@
 PODS:
+  - cm_pedometer (0.0.1):
+    - Flutter
   - device_info_plus (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - health (1.0.4):
+  - health (13.1.0):
+    - Flutter
+  - pedometer (0.0.1):
+    - Flutter
+  - pedometer_2 (0.0.1):
     - Flutter
   - spotify_sdk (0.0.1):
     - Flutter
 
 DEPENDENCIES:
+  - cm_pedometer (from `.symlinks/plugins/cm_pedometer/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - health (from `.symlinks/plugins/health/ios`)
+  - pedometer (from `.symlinks/plugins/pedometer/ios`)
+  - pedometer_2 (from `.symlinks/plugins/pedometer_2/ios`)
   - spotify_sdk (from `.symlinks/plugins/spotify_sdk/ios`)
 
 EXTERNAL SOURCES:
+  cm_pedometer:
+    :path: ".symlinks/plugins/cm_pedometer/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
   health:
     :path: ".symlinks/plugins/health/ios"
+  pedometer:
+    :path: ".symlinks/plugins/pedometer/ios"
+  pedometer_2:
+    :path: ".symlinks/plugins/pedometer_2/ios"
   spotify_sdk:
     :path: ".symlinks/plugins/spotify_sdk/ios"
 
 SPEC CHECKSUMS:
+  cm_pedometer: a67228c722191a373717febcbd03b7a7b5122706
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  health: 5a380c0f6c4f619535845992993964293962e99e
+  health: 25e89989fed17b3b57c4a6f4ee90ca23e62d1ea5
+  pedometer: 381969883680ade42559782cc41a3bbd453d8234
+  pedometer_2: b116b6b20b3d04612f28b9756b3a9feb60bba35b
   spotify_sdk: 93c2e7de88e7deceba91d20856f2e11c30c20a3d
 
-PODFILE CHECKSUM: 83f6a08c58d4b249cda5d50acce1e33fac59623c
+PODFILE CHECKSUM: a6c5d61ab6068322c882f1af53c9d70b5e03d3e2
 
 COCOAPODS: 1.16.2

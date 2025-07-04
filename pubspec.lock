@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  base_codecs:
+    dependency: transitive
+    description:
+      name: base_codecs
+      sha256: "41701a12ede9912663decd708279924ece5018566daa7d1f484d5f4f10894f91"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -21,10 +29,10 @@ packages:
     dependency: transitive
     description:
       name: carp_serializable
-      sha256: bd72f3e7521cfac78c2b34762d9240bded1bebe0c6e615703a516705a3a983a0
+      sha256: f039f8ea22e9437aef13fe7e9743c3761c76d401288dcb702eadd273c3e4dcef
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "2.0.1"
   characters:
     dependency: transitive
     description:
@@ -41,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  cm_pedometer:
+    dependency: "direct main"
+    description:
+      name: cm_pedometer
+      sha256: e90aa23e3ac4acdd6f9e6d8e1d86170d2bebe5b081cf6217f9bc096e0393be9f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   collection:
     dependency: transitive
     description:
@@ -57,6 +73,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.6"
+  csslib:
+    dependency: transitive
+    description:
+      name: csslib
+      sha256: "09bad715f418841f976c77db72d5398dc1253c21fb9c0c7f0b0b985860b2d58e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -65,6 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  data_serializer:
+    dependency: transitive
+    description:
+      name: data_serializer
+      sha256: "547f06990e8e8abce76267bd7b8a071ddc8fe109316ae02402e761c892dd33f6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
   device_info_plus:
     dependency: transitive
     description:
@@ -148,10 +180,18 @@ packages:
     dependency: "direct main"
     description:
       name: health
-      sha256: "9b3c5ddb1cb22020a2bb423b3c091c8b47806a38f80d350dfb11831000af2392"
+      sha256: "8f809e4f3483353976e4e3e50f5755af8bc6ae8f2e8b82f6d88c818617311bde"
       url: "https://pub.dev"
     source: hosted
-    version: "10.2.0"
+    version: "13.1.0"
+  html:
+    dependency: "direct main"
+    description:
+      name: html
+      sha256: "6d1264f2dffa1b1101c25a91dff0dc2daee4c18e87cd8538729773c073dbf602"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.6"
   http:
     dependency: transitive
     description:
@@ -172,10 +212,10 @@ packages:
     dependency: transitive
     description:
       name: intl
-      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.1"
+    version: "0.19.0"
   js:
     dependency: transitive
     description:
@@ -264,6 +304,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
+  pedometer:
+    dependency: "direct main"
+    description:
+      name: pedometer
+      sha256: "71e2608ad472d1fc3bcfce14a151e5c8229c5edd9e2a8a0f1ec416e3ceb00e1a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.1"
+  pedometer_2:
+    dependency: "direct main"
+    description:
+      name: pedometer_2
+      sha256: "799742f38a13c85ff2aa9e4624f6439678f7cd84eb58ef69ab69720377c444e5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.4"
   plugin_platform_interface:
     dependency: transitive
     description:
@@ -301,6 +357,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.12.0"
+  statistics:
+    dependency: "direct main"
+    description:
+      name: statistics
+      sha256: "90037addab662246e1ec986cdfd669077a71727604abd308a9ccb06077665b8b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.3"
   stream_channel:
     dependency: transitive
     description:
@@ -391,4 +455,4 @@ packages:
     version: "1.1.5"
 sdks:
   dart: ">=3.6.0 <4.0.0"
-  flutter: ">=3.18.0-18.0.pre.54"
+  flutter: ">=3.19.0"

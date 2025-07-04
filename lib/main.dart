@@ -1,10 +1,12 @@
 import 'dart:ui';
 
-import 'package:bpmapp/homePage/bpmCard.dart';
+import 'package:bpmapp/health/pedoMeter.dart';
+import 'package:bpmapp/homePage/musicPlayerCard.dart';
 import 'package:bpmapp/homePage/playlist.dart';
 import 'package:bpmapp/homePage/settingsCard.dart';
 import 'package:bpmapp/spotify/spotify.dart';
 import 'package:flutter/material.dart';
+import 'package:bpmapp/homePage/slider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,11 +21,24 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final SpotifyService spotifyAuth = SpotifyService();
+  RangeValues _tempoRange = const RangeValues(120, 160);
 
   @override
   void initState() {
     super.initState();
-    SpotifyService();
+    print(' initState called in main');
+    authenticateSpotify();
+  }
+
+  void updateTempoRange(RangeValues newRange) {
+    setState(() {
+      _tempoRange = newRange;
+    });
+  }
+
+  Future<void> authenticateSpotify() async {
+    print('Attempting to connect to Spotify...');
+    await spotifyAuth.connectToSpotify();
   }
 
   @override
@@ -41,35 +56,43 @@ class _MyAppState extends State<MyApp> {
               filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
               child: Column(
                 children: [
-                  Expanded(
-                    child: Text(
-                      'BPM run app',
-                      style: TextStyle(
-                          fontSize: 30,
-                          decoration: TextDecoration.none,
-                          color: Colors.white),
-                    ),
+                  Container(
+                    height: 70,
                   ),
-                  Expanded(
-                      child: Text(
-                    'What music should we play?',
+                  Text(
+                    textAlign: TextAlign.center,
+                    'BPM interval for your new playlist',
                     style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 26,
                         decoration: TextDecoration.none,
                         color: Colors.white),
-                  )),
-                  Expanded(
-                    flex: 3,
-                    child: Playlist(),
                   ),
                   Expanded(
-                    flex: 2,
-                    child: BpmCard(),
+                    flex: 1,
+                    child: TempoSlider(
+                      currentTempoRange: _tempoRange,
+                      onRangeChnage: updateTempoRange,
+                    ),
+                  ),
+                  Text(
+                    textAlign: TextAlign.center,
+                    'Add playlists to workout',
+                    style: TextStyle(
+                        fontSize: 26,
+                        decoration: TextDecoration.none,
+                        color: Colors.white),
                   ),
                   Expanded(
-                    flex: 2,
+                    flex: 5,
+                    child: Playlist(currentTempoRange: _tempoRange),
+                  ),
+                  Expanded(
+                    flex: 1,
                     child: SettingsCard(),
                   ),
+                  Container(
+                    height: 20,
+                  )
                 ],
               ),
             ),

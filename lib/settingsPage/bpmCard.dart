@@ -63,14 +63,14 @@ class _BpmCardState extends State<BpmCard> {
             ),
             Expanded(
               flex: 1,
-              child: HealthKitManager(),
+              child: Text(''),
             ),
             Expanded(
               child: TextField(
                 controller: myController,
                 style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: 'Manually set BPM',
+                  hintText: 'This does not curretly work',
                   hintStyle: TextStyle(color: Colors.white),
                   border: OutlineInputBorder(),
                 ),

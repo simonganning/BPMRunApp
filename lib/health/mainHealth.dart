@@ -22,10 +22,10 @@ class _HealthKitManagerState extends State<HealthKitManager> {
   }
 
   Future<void> initializeHealth() async {
-    health.configure(useHealthConnectIfAvailable: true);
+    await health.configure();
+    // health.configure(useHealthConnectIfAvailable: true); //old version 10.0.0
     print('Health configured');
     await requestAuthorization();
-    await getInitialSteps(); // Fetch initial steps
     startTimer();
   }
 
@@ -33,58 +33,60 @@ class _HealthKitManagerState extends State<HealthKitManager> {
     final types = [HealthDataType.STEPS];
     bool requested = await health.requestAuthorization(types);
     print('Authorization requested: $requested');
+    if (!requested) {
+      print('--- HEALTHKIT AUTH FAILED! Steps permission not granted. ---');
+    }
   }
 
-  Future<void> getInitialSteps() async {
-    DateTime now = DateTime.now();
-    DateTime midnight = DateTime(now.year, now.month, now.day);
-
-    oldSteps = await health.getTotalStepsInInterval(midnight, now);
-    print('Initial steps: $oldSteps');
-  }
-
-  Future<void> calculateStepsPerMinute() async {
+// right now having problems with getTotalStepsInInterval shwoing null when i put two dates in
+// most likley becasue i dont move the iphone or because oldTime is invalid somehow
+  Future<void> getStepsPerMinute() async {
     try {
-      DateTime now = DateTime.now();
-      DateTime midnight = DateTime(now.year, now.month, now.day);
+      var now = DateTime.now();
+      final sevenDaysAgo = now.subtract(const Duration(days: 7));
+      final startOfWeekInterval = DateTime(
+        sevenDaysAgo.year,
+        sevenDaysAgo.month,
+        sevenDaysAgo.day,
+      );
 
-      // Get current steps
-      newSteps = await health.getTotalStepsInInterval(midnight, now);
-
-      if (oldSteps != null && newSteps != null) {
-        // Calculate steps per minute
-        int stepsDifference = newSteps! - oldSteps!;
-        stepsPerMinute = (stepsDifference * 2); // 30s interval -> multiply by 2
-        oldSteps = newSteps; // Update old steps for next calculation
-
-        print('New steps: $newSteps');
-        print('Old steps: $oldSteps');
-        print('Steps taken in last 30 seconds: $stepsDifference');
-        print('Steps per minute: $stepsPerMinute');
-
-        stepsController.text = stepsPerMinute.toString();
-      } else {
-        print('Failed to retrieve steps data');
+      var testTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      );
+      List<HealthDataPoint> healthData = await health.getHealthDataFromTypes(
+        types: [HealthDataType.STEPS],
+        startTime: testTime,
+        endTime: now,
+      );
+      for (final point in healthData) {
+        print("Got health data: ${point.value} at ${point.dateFrom}");
       }
+      print(" testtime : $startOfWeekInterval and now time $now");
+      var oldTime = now.subtract(Duration(minutes: 1));
+      stepsPerMinute =
+          await health.getTotalStepsInInterval(startOfWeekInterval, now);
+      print("steps is: $stepsPerMinute");
     } catch (e) {
       print('Error retrieving steps: $e');
     }
-
     setState(() {});
   }
 
 // update bpm after every 30 sec
   void startTimer() {
-    timer = Timer.periodic(Duration(seconds: 30), (timer) async {
-      await calculateStepsPerMinute();
+    print("we are now in start timer");
+    timer = Timer.periodic(Duration(seconds: 5), (timer) async {
+      await getStepsPerMinute();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Text('${stepsPerMinute ?? 'Loading...'}',
+    return Text('${stepsPerMinute ?? 'Tempo'}',
         style: TextStyle(
-            fontSize: 20,
+            fontSize: 40,
             decoration: TextDecoration.none,
             color: Colors.white));
   }
@@ -95,95 +97,3 @@ class _HealthKitManagerState extends State<HealthKitManager> {
     super.dispose();
   }
 }
-
-
-
-
-
-
-/*
-
-
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:health/health.dart';
-
-class HealthKitManager extends StatefulWidget {
-  @override
-  _HealthKitManagerState createState() => _HealthKitManagerState();
-}
-
-class _HealthKitManagerState extends State<HealthKitManager> {
-  final Health health = Health();
-  Timer? timer;
-  int? stepsPerMinute;
-  final TextEditingController stepsController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    initializeHealth();
-  }
-
-  Future<void> initializeHealth() async {
-    health.configure(useHealthConnectIfAvailable: true);
-    print('Health configured');
-    await requestAuthorization();
-    startTimer();
-  }
-
-  Future<void> requestAuthorization() async {
-    final types = [HealthDataType.STEPS];
-    bool requested = await health.requestAuthorization(types);
-    print('Authorization requested: $requested');
-  }
-
-  Future<void> calculateStepsPerMinute() async {
-    DateTime now = DateTime.now();
-    DateTime tenSecondsAgo = now.subtract(Duration(seconds: 10));
-    print('$now');
-    print('$tenSecondsAgo');
-
-    // Get steps from 10 seconds ago to now
-    /* int? stepsNow = await health.getTotalStepsInInterval(now, now);
-    int? stepsTenSecondsAgo =
-        await health.getTotalStepsInInterval(tenSecondsAgo, now);
-*/
-    int? steps = await health.getTotalStepsInInterval(tenSecondsAgo, now);
-
-    if (steps != null) {
-      // int stepsTaken = stepsNow - stepsTenSecondsAgo;
-
-      // Multiply by 6 to get steps per minute
-      stepsPerMinute = steps * 6;
-      stepsController.text = stepsPerMinute.toString();
-      print('Steps per minute: $stepsPerMinute');
-    } else {
-      print('Failed to retrieve steps data');
-    }
-
-    setState(() {});
-  }
-
-  void startTimer() {
-    timer = Timer.periodic(Duration(seconds: 10), (timer) async {
-      await calculateStepsPerMinute();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      'Steps per Minute: ${stepsPerMinute ?? 'Calculating...'}',
-      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-    );
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-}
-
-*/
