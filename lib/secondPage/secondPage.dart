@@ -1,16 +1,12 @@
 import 'package:bpmapp/health/pedoMeter.dart';
-import 'package:bpmapp/homePage/musicPlayerCard.dart';
+import 'package:bpmapp/secondPage/musicPlayerCard.dart';
+import 'package:bpmapp/spotify/spotify.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:spotify_sdk/spotify_sdk.dart';
 
-class MainSettingsPage extends StatelessWidget {
-  const MainSettingsPage({super.key});
-
-  final albumUrl = "";
-
-  // gör någon instans här av get cover image, kanske måste göra klassen till stateful
-  // SpotifyService spotify = SpotifyService ();
-  // future String cover = spotify.getCoverImage();
+class SecondPage extends StatelessWidget {
+  const SecondPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +38,15 @@ class MainSettingsPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                             color: const Color.fromARGB(54, 181, 34, 117)),
                         child: TextButton(
-                            onPressed: () {
+                            onPressed: () async {
                               Navigator.pop(context);
+                              /*
+                              SpotifyService spotify = SpotifyService();
+                              String playlist = spotify.getMainPlaylistID();
+                              final String spotifyUri =
+                                  'spotify:playlist:$playlist';
+                              await SpotifySdk.play(spotifyUri: spotifyUri);
+                              */
                             },
                             child: const Text(
                               textAlign: TextAlign.center,

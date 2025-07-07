@@ -1,10 +1,12 @@
-import 'package:bpmapp/settingsPage/mainSettingsPage.dart';
+import 'package:bpmapp/secondPage/secondPage.dart';
+import 'package:bpmapp/spotify/spotify.dart';
 import 'package:flutter/material.dart';
+import 'package:spotify_sdk/spotify_sdk.dart';
 
 bool bpmState = false;
 
-class SettingsCard extends StatelessWidget {
-  const SettingsCard({super.key});
+class SecondPageButton extends StatelessWidget {
+  const SecondPageButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +19,17 @@ class SettingsCard extends StatelessWidget {
         color: const Color.fromARGB(54, 181, 34, 117),
       ),
       child: TextButton(
-        onPressed: () {
+        onPressed: () async {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const MainSettingsPage()),
+            MaterialPageRoute(builder: (context) => const SecondPage()),
           );
+          SpotifyService spotify = SpotifyService();
+          String playlist = spotify.getMainPlaylistID();
+          final String spotifyUri = 'spotify:playlist:$playlist';
+          if (spotify.is_playing() == "not_playing") {
+            await SpotifySdk.play(spotifyUri: spotifyUri);
+          }
         },
         child: Text(
           textAlign: TextAlign.center,

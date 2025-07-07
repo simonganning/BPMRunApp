@@ -29,6 +29,14 @@ class _MusicPlayerState extends State<MusicPlayer> {
     await _spotifyService.next();
   }
 
+  Future<void> prevSong() async {
+    await _spotifyService.prev();
+  }
+
+  Future<void> play_pause() async {
+    await _spotifyService.play_pause();
+  }
+
   // Method to fetch the album cover and update the state
   Future<void> _getAlbumAndSong() async {
     try {
@@ -105,7 +113,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
                   IconButton(
                     iconSize: 50,
                     onPressed: () async {
-                      await nextSong();
+                      await prevSong();
                       await Future.delayed(const Duration(seconds: 1));
                       await _getAlbumAndSong(); // Fetch new cover after "previous"
                     },
@@ -113,7 +121,7 @@ class _MusicPlayerState extends State<MusicPlayer> {
                         const Icon(Icons.navigate_before, color: Colors.white),
                   ),
                   const Text(
-                    'Next', // Changed to previous for clarity
+                    'Prev', // Changed to previous for clarity
                     style: TextStyle(
                         fontSize: 16,
                         decoration: TextDecoration.none,
@@ -125,8 +133,8 @@ class _MusicPlayerState extends State<MusicPlayer> {
                 children: [
                   IconButton(
                     iconSize: 50,
-                    onPressed: () {
-                      _spotifyService.play_pause();
+                    onPressed: () async {
+                      await play_pause();
                     },
                     icon: const Icon(Icons.not_started, color: Colors.white),
                   ),

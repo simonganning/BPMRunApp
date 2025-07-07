@@ -12,7 +12,7 @@ class SpotifyService {
   final String clientId = 'ae9c8816792d4601b642965f0a4d13b4';
   final String redirectUrl = 'spotify-ios-quick-start://spotify-login-callback';
   final String scope =
-      'playlist-modify-public playlist-modify-private user-read-private user-read-currently-playing';
+      'playlist-modify-public playlist-modify-private user-read-private user-read-currently-playing user-read-playback-state';
   String username = "";
   String? _accessToken;
   bool? playing;
@@ -26,6 +26,16 @@ class SpotifyService {
     } catch (e) {
       print('Error connecting to Spotify: $e');
     }
+  }
+
+  String getMainPlaylistID() {
+    String playlist = "error";
+
+    if (mainPlaylistId != null) {
+      playlist = mainPlaylistId!;
+    }
+
+    return playlist;
   }
 
   Future<void> deletePlaylist(String? playlistID) async {
@@ -384,21 +394,54 @@ class SpotifyService {
       final data = jsonDecode(response.body);
       mainPlaylistId = data['id'];
       print(" made a playlist with id: $mainPlaylistId");
+      final String spotifyUri = 'spotify:playlist:$mainPlaylistId';
+      await SpotifySdk.play(spotifyUri: spotifyUri);
     } else {
       print(" did not make a playlist with id: $mainPlaylistId");
       print("Error making a playlist");
     }
   }
 
+  Future<bool> if_song_in_playlist() async {
+    try {
+      final url =
+          Uri.parse('https://api.spotify.com/v1/playlists/$mainPlaylistId/');
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $_accessToken',
+      });
+      if (response.statusCode == 200) {
+        print("we are fine");
+        final data = jsonDecode(response.body);
+        final tracks = data['tracks'];
+        final total = tracks['total'];
+
+        if (total == 0) {
+          print("there are no songs in playlist");
+          return false;
+        } else {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Somezing wrong');
+      return false;
+    }
+  }
+
 // for play / pause button
   Future<void> play_pause() async {
     try {
-      if (playing == true) {
+      print("now in play_pause spotify function");
+      String play = await is_playing();
+      if (play == "playing") {
         await SpotifySdk.pause();
-        playing = false;
+      } else if (play == "not_playing") {
+        if (if_song_in_playlist == true) {
+          await SpotifySdk.resume();
+        }
       } else {
-        await SpotifySdk.resume();
-        playing = true;
+        print("an error occurd so we do nothing");
       }
     } catch (e) {
       print('Somezing wrong');
@@ -406,11 +449,44 @@ class SpotifyService {
   }
 
   // for next song button
+  Future<String> is_playing() async {
+    try {
+      final url = Uri.parse('https://api.spotify.com/v1/me/player');
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $_accessToken',
+      });
+      print(
+          "statuscode is ${response.statusCode} for getting if song is playing");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print(" data is ${data['is_playing']} ");
+        if (data['is_playing'] == true) {
+          print("returning playing");
+          return "playing";
+        } else if (data['is_playing'] == false) {
+          print("returning not playing");
+          return "not_playing";
+        } else {
+          print("something went wrong with getting if a song is playing");
+          return "error";
+        }
+      }
+    } catch (e) {
+      print('Couln not fetch if song is playing');
+    }
+    return "error";
+  }
+
+  // for next song button
   Future<void> next() async {
     try {
-      final String spotifyUri = 'spotify:playlist:$mainPlaylistId';
-      await SpotifySdk.play(spotifyUri: spotifyUri);
-      await SpotifySdk.skipNext();
+      bool songs_inPlyalist = await if_song_in_playlist();
+      print(" songs in playlist bool is $songs_inPlyalist");
+      if (songs_inPlyalist == true) {
+        await SpotifySdk.skipNext();
+      } else if (songs_inPlyalist == false) {
+        print("we do nothing cuz no songs in playlist");
+      }
     } catch (e) {
       print('Couln not pause the song');
     }

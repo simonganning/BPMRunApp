@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from openai import OpenAI
 
 app = Flask(__name__)
-client = OpenAI(api_key="")
+client = OpenAI(api_key="A")
 
 @app.route('/', methods=['GET', 'POST'])
 def ask_how_are_you():

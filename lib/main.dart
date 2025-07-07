@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:bpmapp/homePage/playlist.dart';
-import 'package:bpmapp/homePage/settingsCard.dart';
+import 'package:bpmapp/homePage/secondPageButton.dart';
 import 'package:bpmapp/spotify/spotify.dart';
 import 'package:flutter/material.dart';
 import 'package:bpmapp/homePage/slider.dart';
@@ -87,7 +87,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                   Expanded(
                     flex: 1,
-                    child: SettingsCard(),
+                    child: SecondPageButton(),
                   ),
                   Container(
                     height: 20,
