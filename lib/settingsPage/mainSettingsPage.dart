@@ -1,9 +1,5 @@
 import 'package:bpmapp/health/pedoMeter.dart';
 import 'package:bpmapp/homePage/musicPlayerCard.dart';
-import 'package:bpmapp/settingsPage/bpmCard.dart';
-import 'package:bpmapp/main.dart';
-import 'package:bpmapp/settingsPage/songBpmCard.dart';
-import 'package:bpmapp/spotify/spotify.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 

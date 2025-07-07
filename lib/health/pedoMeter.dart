@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cm_pedometer/cm_pedometer.dart';
-//import 'package:permission_handler/permission_handler.dart'; // Add this for permissions
 
 class Pedo extends StatefulWidget {
   @override

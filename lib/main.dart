@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'package:bpmapp/health/pedoMeter.dart';
-import 'package:bpmapp/homePage/musicPlayerCard.dart';
 import 'package:bpmapp/homePage/playlist.dart';
 import 'package:bpmapp/homePage/settingsCard.dart';
 import 'package:bpmapp/spotify/spotify.dart';
@@ -44,6 +42,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Container(
           decoration: BoxDecoration(
               color: Colors.black,

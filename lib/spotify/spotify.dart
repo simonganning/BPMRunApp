@@ -138,7 +138,7 @@ class SpotifyService {
   }
 
   Future<List<dynamic>> getTrackTempo(String song_info) async {
-    final url = Uri.parse('http://172.20.10.10:5001/');
+    final url = Uri.parse('https://simonganning.pythonanywhere.com/');
     var bmp_tempo = [0, 0];
     print('track id is $song_info');
     final response = await http.post(
