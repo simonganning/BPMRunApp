@@ -1,39 +1,55 @@
 import 'package:bpmapp/secondPage/secondPage.dart';
 import 'package:bpmapp/spotify/spotify.dart';
 import 'package:flutter/material.dart';
-import 'package:spotify_sdk/spotify_sdk.dart';
 
-bool bpmState = false;
+class SecondPageButton extends StatefulWidget {
+  final bool currentPlaylist;
 
-class SecondPageButton extends StatelessWidget {
-  const SecondPageButton({super.key});
+  const SecondPageButton({
+    super.key,
+    required this.currentPlaylist,
+  });
 
   @override
+  State<SecondPageButton> createState() => _SecondPageButton();
+}
+
+class _SecondPageButton extends State<SecondPageButton> {
+  @override
   Widget build(BuildContext context) {
+    // Derive the title directly from currentPlaylist
+    String buttonTitle = widget.currentPlaylist ? "Go" : "No playlist selected";
+
     return Container(
       width: double.infinity,
       margin: EdgeInsets.all(10),
-      // padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: const Color.fromARGB(54, 181, 34, 117),
+        // You can also change the color based on currentPlaylist
+        color: widget.currentPlaylist
+            ? const Color.fromARGB(54, 181, 34, 117) // Active color
+            : const Color.fromARGB(54, 100, 100, 100), // Disabled color
       ),
       child: TextButton(
-        onPressed: () async {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const SecondPage()),
-          );
-          SpotifyService spotify = SpotifyService();
-          String playlist = spotify.getMainPlaylistID();
-          final String spotifyUri = 'spotify:playlist:$playlist';
-          if (spotify.is_playing() == "not_playing") {
-            await SpotifySdk.play(spotifyUri: spotifyUri);
-          }
-        },
+        // Conditionally enable/disable the button
+        onPressed: widget.currentPlaylist
+            ? () async {
+                SpotifyService spotify = SpotifyService();
+                bool songInPlaylist = await spotify.songInPlaylist();
+                if (songInPlaylist == true) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SecondPage()),
+                  );
+                } else {
+                  // Optionally show a message if songInPlaylist is false
+                  buttonTitle = "please choose a playlist";
+                }
+              }
+            : null, // Set to null to disable the button
         child: Text(
           textAlign: TextAlign.center,
-          'Go!',
+          buttonTitle, // Use the derived title
           style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 26,

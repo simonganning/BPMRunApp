@@ -20,6 +20,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final SpotifyService spotifyAuth = SpotifyService();
   RangeValues _tempoRange = const RangeValues(120, 160);
+  bool playlist = false;
 
   @override
   void initState() {
@@ -31,6 +32,12 @@ class _MyAppState extends State<MyApp> {
   void updateTempoRange(RangeValues newRange) {
     setState(() {
       _tempoRange = newRange;
+    });
+  }
+
+  void updatePlaylistChosen(bool newVal) {
+    setState(() {
+      playlist = newVal;
     });
   }
 
@@ -83,11 +90,15 @@ class _MyAppState extends State<MyApp> {
                   ),
                   Expanded(
                     flex: 5,
-                    child: Playlist(currentTempoRange: _tempoRange),
+                    child: Playlist(
+                      currentTempoRange: _tempoRange,
+                      playlistChoosen: playlist,
+                      playlistChange: updatePlaylistChosen,
+                    ),
                   ),
                   Expanded(
                     flex: 1,
-                    child: SecondPageButton(),
+                    child: SecondPageButton(currentPlaylist: playlist),
                   ),
                   Container(
                     height: 20,

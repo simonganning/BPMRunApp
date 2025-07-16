@@ -3,8 +3,14 @@ import 'package:bpmapp/spotify/spotify.dart';
 
 class Playlist extends StatefulWidget {
   final RangeValues currentTempoRange;
+  final bool playlistChoosen;
+  final Function(bool) playlistChange;
 
-  const Playlist({super.key, required this.currentTempoRange});
+  const Playlist(
+      {super.key,
+      required this.currentTempoRange,
+      required this.playlistChoosen,
+      required this.playlistChange});
 
   @override
   State<Playlist> createState() => _PlaylistState();
@@ -30,6 +36,7 @@ class _PlaylistState extends State<Playlist> {
 
   List<PlaylistItem> playlists = [];
   List<PlaylistItem> corePlaylist = [];
+  int numberOfSelectedPlaylists = 0;
 
   bool isLoading = false;
   int offset = 0;
@@ -101,6 +108,12 @@ class _PlaylistState extends State<Playlist> {
                     setState(() {
                       item.isChosen = !item.isChosen;
                       if (item.isChosen) {
+                        numberOfSelectedPlaylists++;
+                        print(
+                            " number of selected playlists: $numberOfSelectedPlaylists");
+                        if (numberOfSelectedPlaylists >= 1) {
+                          widget.playlistChange(true);
+                        }
                         // funktion som tar in ett playlist item
                         print(" playlist id that is choosen ${item.id}");
                         print(
@@ -109,6 +122,12 @@ class _PlaylistState extends State<Playlist> {
                             item.id, widget.currentTempoRange);
                         //  corePlaylist.add(item);
                       } else if (!item.isChosen) {
+                        numberOfSelectedPlaylists--;
+                        print(
+                            " number of selected playlists: $numberOfSelectedPlaylists");
+                        if (numberOfSelectedPlaylists < 1) {
+                          widget.playlistChange(false);
+                        }
                         print('playlist id that is un -choosen ${item.id}');
                         spotifyService.deleteSongsFromMainPlaylist(item.id);
                       }

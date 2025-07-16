@@ -15,10 +15,6 @@ class TempoSlider extends StatefulWidget {
 }
 
 class _TempoSliderState extends State<TempoSlider> {
-  // We no longer need an internal _currentRangeValues if we want to
-  // fully control it from the parent.
-  // The RangeSlider will directly use widget.currentTempoRange.
-
   @override
   Widget build(BuildContext context) {
     return Material(

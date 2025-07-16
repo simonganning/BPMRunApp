@@ -1,13 +1,16 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:bpmapp/homePage/playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 class SpotifyService {
   static final SpotifyService _instance = SpotifyService._internal();
   factory SpotifyService() => _instance;
   SpotifyService._internal();
+  StreamSubscription<PlayerState>? _playerStateSubscription;
 
   final String clientId = 'ae9c8816792d4601b642965f0a4d13b4';
   final String redirectUrl = 'spotify-ios-quick-start://spotify-login-callback';
@@ -17,8 +20,6 @@ class SpotifyService {
   String? _accessToken;
   bool? playing;
   String? mainPlaylistId;
-  double songTempo = 0;
-  int userTempo = 160;
 
   Future<void> connectToSpotify() async {
     try {
@@ -30,11 +31,9 @@ class SpotifyService {
 
   String getMainPlaylistID() {
     String playlist = "error";
-
     if (mainPlaylistId != null) {
       playlist = mainPlaylistId!;
     }
-
     return playlist;
   }
 
@@ -63,15 +62,28 @@ class SpotifyService {
         scope: scope,
       );
       print("acess token is $_accessToken");
-      SpotifySdk.subscribePlayerState();
-      playing = true;
       await getUserId();
       await createPlaylist();
+      _playerStateSubscription = SpotifySdk.subscribePlayerState().listen(
+        (playerState) {
+          // Update your 'playing' variable or trigger UI rebuilds here
+          playing = !playerState.isPaused;
+          print("Player state updated: isPlaying = $playing");
+          // You could also store the full playerState object if needed
+          // this._lastPlayerState = playerState;
+        },
+        onError: (error) {
+          print("Error in player state subscription: $error");
+          playing = false; // Assume not playing on error
+        },
+        onDone: () {
+          print("Player state subscription done.");
+          playing = false;
+        },
+      );
       return _accessToken;
     } catch (e) {
       print('Error retrieving access token: $e');
-      playing = false;
-
       return null;
     }
   }
@@ -240,15 +252,11 @@ class SpotifyService {
 
       final Map<String, dynamic> trackData = jsonDecode(response.body);
 
-      // 1. Get the Song Name
       String songName = trackData['name'];
-
-      // 2. Get the Album Name
       String albumName = trackData['album']['name'];
-
-      // 3. Get the Artist Names
       List<dynamic> artists = trackData['artists'];
       List<String> artistNames = [];
+
       for (var artist in artists) {
         artistNames.add(artist['name']);
       }
@@ -350,6 +358,8 @@ class SpotifyService {
       final data = json.decode(response.body);
       final items = data['items'] as List;
       return items.map((item) {
+        if (item['name'] == "My BPM running list") {
+        } else {}
         return PlaylistItem(
           id: item['id'],
           name: item['name'],
@@ -402,7 +412,7 @@ class SpotifyService {
     }
   }
 
-  Future<bool> if_song_in_playlist() async {
+  Future<bool> songInPlaylist() async {
     try {
       final url =
           Uri.parse('https://api.spotify.com/v1/playlists/$mainPlaylistId/');
@@ -433,18 +443,44 @@ class SpotifyService {
   Future<void> play_pause() async {
     try {
       print("now in play_pause spotify function");
-      String play = await is_playing();
-      if (play == "playing") {
+      bool play = await is_playing_ios();
+      if (play == true) {
         await SpotifySdk.pause();
-      } else if (play == "not_playing") {
-        if (if_song_in_playlist == true) {
+      } else if (play == false) {
+        print(" the song is not playing");
+        bool songAvailable = await songInPlaylist();
+        if (songAvailable == true) {
+          print("there is a song in playlist and we should play it");
           await SpotifySdk.resume();
+          print("done with spotify resume");
         }
       } else {
         print("an error occurd so we do nothing");
       }
     } catch (e) {
       print('Somezing wrong');
+    }
+  }
+
+  Future<bool> is_playing_ios() async {
+    // You might still want to call getPlayerState() initially or if the stream isn't active,
+    // but if the subscription is running, 'playing' should be up-to-date.
+    if (playing != null) {
+      return playing!;
+    } else {
+      // Fallback to direct call if stream hasn't provided initial state yet
+      print(
+          "Player state not yet available from subscription, fetching directly...");
+      try {
+        PlayerState? player = await SpotifySdk.getPlayerState();
+        if (player != null) {
+          playing = !player.isPaused; // Update for future calls
+          return playing!;
+        }
+      } catch (e) {
+        print('Could not fetch if song is playing directly: $e');
+      }
+      return false; // Default if nothing works
     }
   }
 
@@ -455,6 +491,7 @@ class SpotifyService {
       final response = await http.get(url, headers: {
         'Authorization': 'Bearer $_accessToken',
       });
+
       print(
           "statuscode is ${response.statusCode} for getting if song is playing");
       if (response.statusCode == 200) {
@@ -480,7 +517,7 @@ class SpotifyService {
   // for next song button
   Future<void> next() async {
     try {
-      bool songs_inPlyalist = await if_song_in_playlist();
+      bool songs_inPlyalist = await songInPlaylist();
       print(" songs in playlist bool is $songs_inPlyalist");
       if (songs_inPlyalist == true) {
         await SpotifySdk.skipNext();
@@ -495,7 +532,13 @@ class SpotifyService {
   // for prevoius song button
   Future<void> prev() async {
     try {
-      await SpotifySdk.skipPrevious();
+      bool songs_inPlyalist = await songInPlaylist();
+      print(" songs in playlist bool is $songs_inPlyalist");
+      if (songs_inPlyalist == true) {
+        await SpotifySdk.skipPrevious();
+      } else if (songs_inPlyalist == false) {
+        print("we do nothing cuz no songs in playlist");
+      }
     } catch (e) {
       print('Couln not pause the song');
     }
