@@ -23,6 +23,7 @@ class SpotifyService {
 
   Future<void> connectToSpotify() async {
     try {
+      print("we first connect to spotify via connectToSpotify");
       _accessToken = await getAccessToken();
     } catch (e) {
       print('Error connecting to Spotify: $e');
@@ -102,21 +103,16 @@ class SpotifyService {
   // should already have created a playlist and now put all the songs from that playlist in
   // the new playlist
   Future<String> getCurrentSong() async {
-    print(" we are now in get song");
     String currentSong;
     final url =
         Uri.parse('https://api.spotify.com/v1/me/player/currently-playing');
     final response = await http.get(url, headers: {
       'Authorization': 'Bearer $_accessToken',
     });
-    print(" statuscode is ${response.statusCode}");
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      // print(data);
-
       if (data['item'] != null) {
         final item = data['item'];
-        // print("item is $item");
 
         if (item['type'] == 'track' && item['album'] != null) {
           currentSong = item['name'];
@@ -124,39 +120,31 @@ class SpotifyService {
         }
       }
     }
-    return "";
+    return "Error loading song";
   }
 
   Future<String> getCurrentCover() async {
-    print(" we are now in get currentCover");
     String imageUrl;
     final url =
         Uri.parse('https://api.spotify.com/v1/me/player/currently-playing');
     final response = await http.get(url, headers: {
       'Authorization': 'Bearer $_accessToken',
     });
-    print(" statuscode is ${response.statusCode}");
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      // print(data);
-
       if (data['item'] != null) {
         final item = data['item'];
-        // print("item is $item");
-
         if (item['type'] == 'track' && item['album'] != null) {
           final album = item['album'];
-          //  print("album is $album");
           if (album['images'] != null) {
-            //  print("before images");
             imageUrl = album['images'][0]['url'];
-            //  print("imgurl is $imageUrl");
             return imageUrl;
           }
         }
       }
     }
-    return "";
+    // a spotify logo if the statuscode not is 200
+    return "https://logos-world.net/wp-content/uploads/2020/09/Spotify-Emblem.png";
   }
 
   Future<List<dynamic>> getTrackTempo(String song_info) async {
@@ -406,6 +394,7 @@ class SpotifyService {
       print(" made a playlist with id: $mainPlaylistId");
       final String spotifyUri = 'spotify:playlist:$mainPlaylistId';
       await SpotifySdk.play(spotifyUri: spotifyUri);
+      await next();
     } else {
       print(" did not make a playlist with id: $mainPlaylistId");
       print("Error making a playlist");

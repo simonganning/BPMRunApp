@@ -37,13 +37,14 @@ class _SecondPageButton extends State<SecondPageButton> {
                 SpotifyService spotify = SpotifyService();
                 bool songInPlaylist = await spotify.songInPlaylist();
                 if (songInPlaylist == true) {
+                  //await spotify.play_pause();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const SecondPage()),
                   );
                 } else {
                   // Optionally show a message if songInPlaylist is false
-                  buttonTitle = "please choose a playlist";
+                  buttonTitle = "No song in playlist";
                 }
               }
             : null, // Set to null to disable the button

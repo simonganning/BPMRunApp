@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    print(' initState called in main');
+    print('initState called in main');
     authenticateSpotify();
   }
 
